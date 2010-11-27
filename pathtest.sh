@@ -8,15 +8,35 @@ br() {
 aslines() {
   echo $PATH | tr : '\n'
 }
+livepaths() {
+for f in `aslines`
+do
+  [[ -d $f ]] && echo $f
+done
+}
+
+echo 'echo $PATH'
+echo '----------'
 echo $PATH
 br
+
+echo "On separate lines (" $( aslines | wc -l ) "entries ):"
 aslines
 br
-echo '#Bytes'	"	" "In path"
-du -hs `aslines`
-br
-  echo '#Files'	"	" "In path"
+
+echo "Issues: "
 for f in `aslines`
+do
+  [[ ! -d $f ]] && echo "Not a directory, ignore: " $f
+done
+br
+
+echo '#Bytes'	"	" "In path"
+du -hs `livepaths`
+br
+
+  echo '#Files'	"	" "In path"
+for f in `livepaths`
 do
   echo $(find $f | wc -l) "	" $f
 done
