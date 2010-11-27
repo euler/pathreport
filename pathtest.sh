@@ -41,4 +41,5 @@ do
   echo $(find $f | wc -l) "	" $f
 done
 br
-
+echo "Duplicated in PATH"
+find `livepaths` | sed -e 's=^.*/==' | sort | uniq -c | sed -e '/^ *1 /d' | sort -n
