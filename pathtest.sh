@@ -8,7 +8,7 @@ br() {
   echo "-----"
 }
 
-# Show path elements as separate lines
+# Show each path element as a separate line
 aslines() {
   echo $PATH | tr : '\n'
 }
@@ -17,6 +17,7 @@ aslines() {
 livepaths() {
 for f in `aslines`
 do
+  # Ignore things that are not existing directories
   [[ -d $f ]] && echo $f
 done
 }
@@ -52,28 +53,37 @@ do
   echo $(find $f -type f -maxdepth 1 | wc -l) "	" $f
 done
 br
+
 echo "Files duplicated in PATH"
 pathfiles | sed -e 's=^.*/==' | sort | uniq -c | sed -e '/^ *1 /d' | sort -n
-
 br
+
 # 1 == "previous", 2 == "current", 3 == "next"
-# Initialize everything so we can start reading "next"
+# Initialize everything to unmatchable values so we can start reading "next"
 cmd1="dummy 1";path1=""
 cmd2="dummy 2";path2=""
 cmd3="dummy 3";path3=""
+
 echo "Duplicate definitions in PATH"
-pathfiles | tr ' ' _ | sed -e 's=\(^.*/\)=\1 =' |
-sort -k 2 | 
-rev |
-while read cmd3 path3  # read the new "next" command and path
+pathfiles |
+while read fullpath
+do
+  echo `basename $fullpath` $fullpath
+done |
+sort |  # by basename
+while read cmd3 path3  # read the new "next" command and full path
  do
-   # Emit the current line if it matches either the previous or the next (or both)
+
+   # Emit the current line if it's cmd matches either the previous or the next (or both)
    if [[ ( "$cmd2" == "$cmd1" ) || ( "$cmd2" == "$cmd3" ) ]]
    then
-     echo $cmd2 $path2
+     echo $path2
    fi
+
    # Move current to previous and new next to current for next loop
    cmd1=$cmd2; path1=$path2
    cmd2=$cmd3; path2=$path3
- done | rev
+
+ done 
  # Exiting the while loop with no "next". The old "current" was processed
+
