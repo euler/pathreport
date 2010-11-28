@@ -31,7 +31,7 @@ echo '----------'
 echo $PATH
 br
 
-echo "On separate lines (" $( aslines | wc -l ) "entries ):"
+echo "Path elements (" $( aslines | wc -l ) "entries ):"
 aslines
 br
 
@@ -42,11 +42,11 @@ do
 done
 br
 
-echo '#Bytes'	"	" "In PATH tree"
+echo '#Bytes'	"	" In PATH tree
 du -hs `livepaths`
 br
 
-echo '#Files'	"	" "In PATH directory"
+echo '#Files'	"	" "In each PATH directory"
 for f in `livepaths`
 do
   echo $(find $f -type f -maxdepth 1 | wc -l) "	" $f
