@@ -3,6 +3,10 @@
 # Help figure out PATH settings
 #
 
+#
+# The support functions
+#
+
 # Emit break between output sections 
 br() {
   echo "-----"
@@ -26,6 +30,10 @@ done
 pathfiles() {
   find `livepaths` -type f -maxdepth 1
 }
+
+#
+# The various reports
+#
 
 echo 'echo $PATH'
 echo '----------'
@@ -55,7 +63,8 @@ done
 br
 
 echo "Files duplicated in PATH"
-pathfiles | sed -e 's=^.*/==' | sort | uniq -c | sed -e '/^ *1 /d' | sort -n
+echo "#copies"
+pathfiles | sed -e 's=^.*/==' | sort | uniq -c | sed -e '/^ *1 /d' | sort -nr
 br
 
 # 1 == "previous", 2 == "current", 3 == "next"
@@ -68,22 +77,25 @@ echo "Duplicate definitions in PATH"
 pathfiles |
 while read fullpath
 do
-  echo `basename $fullpath` $fullpath
+  [[ $fullpath =~ /([^/]*)$ ]]
+  # Emit basename|fullpath. The '|' is a delimeter not in filenames.
+  echo ${BASH_REMATCH[1]}'|'$fullpath
 done |
 sort |  # by basename
-while read cmd3 path3  # read the new "next" command and full path
+while read nextline  # the new next "command|fullpath"
  do
+   # Separate the next command and the fullpath
+   [[ $nextline =~ ^([^|]*)\|(.*)$ ]]
+   cmd3=${BASH_REMATCH[1]}
+   path3=${BASH_REMATCH[2]}
 
-   # Emit the current line if it's cmd matches either the previous or the next (or both)
-   if [[ ( "$cmd2" == "$cmd1" ) || ( "$cmd2" == "$cmd3" ) ]]
-   then
-     echo $path2
-   fi
+   # Emit the full path for "current" cmd2 if it  matches
+   # either the previous or the next cmd (or both)
+   [[ ("$cmd2" == "$cmd1") || ("$cmd2" == "$cmd3") ]] && echo $path2
 
    # Move current to previous and new next to current for next loop
-   cmd1=$cmd2; path1=$path2
+   cmd1=$cmd2; # path1=$path2
    cmd2=$cmd3; path2=$path3
-
  done 
- # Exiting the while loop with no "next". The old "current" was processed
+ # Exit the while loop with no more "next". The old "current" was processed
 
