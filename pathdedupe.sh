@@ -1,8 +1,12 @@
 #/bin/bash
 #
-# Emit a deduped version of $PATH, with order preserved
+# Emit a $PATH copy removing duplicate entries, preserving order.
 #
-echo $PATH | tr ':' '\n' | # elements to individual lines
-cat -n | sort -u -k 2 | # number lines, sort by path, keep unique
-sort -n | sed -e 's/^.......//' | # to original order, remove numbers
-tr '\n' ':' # back to ':' separated elements
+# Method: Split into individual lines, number the lines,
+# sort by path keeping unique paths, sort back to original
+# order, remove added line numbers, then back to path format
+#
+echo $PATH | tr ':' '\n' | cat -n |
+sort -u -k 2 |
+sort -n | sed -e 's/^.......//' |
+tr '\n' ':' | sed -e 's/:$//'
