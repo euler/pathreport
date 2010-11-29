@@ -82,6 +82,7 @@ do
   echo ${BASH_REMATCH[1]}'|'$fullpath
 done |
 sort |  # by basename, with fullpath attached
+( cat ; echo "dummy last|none" ) |  # append a dummy to end of sorted stream
 while read nextline  # the new next "command|fullpath"
  do
    # Separate the sorted record back into command and fullpath
