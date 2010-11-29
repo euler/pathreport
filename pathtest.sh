@@ -73,18 +73,18 @@ cmd1="dummy 1";path1=""
 cmd2="dummy 2";path2=""
 cmd3="dummy 3";path3=""
 
-echo "Duplicate definitions in PATH"
+echo "Pathnames of the duplicate definitions"
 pathfiles |
 while read fullpath
 do
   [[ $fullpath =~ /([^/]*)$ ]]
-  # Emit basename|fullpath. The '|' is a delimeter not in filenames.
+  # Emit "basename|fullpath". The "|" is a delimiter not in filenames.
   echo ${BASH_REMATCH[1]}'|'$fullpath
 done |
-sort |  # by basename
+sort |  # by basename, with fullpath attached
 while read nextline  # the new next "command|fullpath"
  do
-   # Separate the next command and the fullpath
+   # Separate the sorted record back into command and fullpath
    [[ $nextline =~ ^([^|]*)\|(.*)$ ]]
    cmd3=${BASH_REMATCH[1]}
    path3=${BASH_REMATCH[2]}
