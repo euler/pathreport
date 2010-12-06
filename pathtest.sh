@@ -35,8 +35,9 @@ pathfiles() {
 # The various reports
 #
 
+echo `date` on `hostname`
+br
 echo 'echo $PATH'
-echo '----------'
 echo $PATH
 br
 
@@ -45,10 +46,12 @@ aslines
 br
 
 echo "Issues: "
+noissues="	No issues found."
 for f in `aslines`
 do
-  [[ ! -d $f ]] && echo "Not a directory, ignoring: " $f
+  [[ ! -d $f ]] && echo "Not a directory, ignoring: " $f && noissues=""
 done
+echo "$noissues"
 br
 
 echo '#Bytes'	"	" In PATH tree
